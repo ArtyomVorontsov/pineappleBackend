@@ -36,6 +36,16 @@ abstract class ActiveRecordEntity{
         return $properties;
     }
 
+    static public function getOneBy(string $column, $sougth){
+        $tableName = static::getTableName();
+        $sql = "SELECT * FROM `$tableName`
+        WHERE :param1 = :param2
+        LIMIT 1";
+
+        $db = Db::getInstance();
+        $value = $db->query($sql, ["param1" => $column, "param2" => $sougth], false, static::class);
+        return $value[0];
+    }
 
     public static function getLast(){
         $tableName = static::getTableName();
@@ -63,7 +73,6 @@ abstract class ActiveRecordEntity{
                 $params[] = ":param" . $i;
                 $argumentsValues["param" . $i] = $this->$property;
                 $argumentsNames[] = $property;
-
             }
         }
 
@@ -74,9 +83,6 @@ abstract class ActiveRecordEntity{
 
         $db = Db::getInstance();
         $db->query($sql, $argumentsValues, true);
-
-        //$result = static::getLast();
-        //var_dump($result);
         
     }
 
@@ -94,6 +100,3 @@ abstract class ActiveRecordEntity{
        
     }
 }
-
-
-?>
