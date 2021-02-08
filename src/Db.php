@@ -25,7 +25,6 @@ class Db {
            
             static $instancesCount = 0;
 
-            echo $instancesCount;
             if($instancesCount === 0){
                self::$instance = new Db();
                ++$instancesCount;
@@ -35,11 +34,16 @@ class Db {
              return self::$instance;
         }
 
-        public function query(string $sql, array $params = [], string $className = "stdClass" ): array{
+        
+
+        public function query(string $sql, array $params = [], bool $isAdding = false, string $className = "stdClass" ): array{
             $sth = $this->_pdo->prepare($sql);
             $result = $sth->execute($params);
 
-            if(!$result) return null;
+            var_dump($params);
+
+            if(!$result || $isAdding) return [null];
+
             return $sth->fetchAll(\PDO::FETCH_CLASS,$className);
         }
 

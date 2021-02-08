@@ -9,11 +9,17 @@ use src\Db;
 abstract class ActiveRecordEntity{
     static abstract protected function getTableName(): string;
 
-    public static function getAll(){
+    public static function getAllBy( object $object ,string $column = "email", string $order = "DESC"){
         $db = Db::getInstance();
         $tableName = static::getTableName();
-        $sql = "SELECT * FROM `$tableName`";
-        return $db->query($sql);
+
+        $properties = $object->mapProperties();
+
+        $column = in_array($column, $properties, true) ? $column : "createdAt";
+        $order = $order === "DESC" ? "DESC" : "ASC";
+
+        $sql = "SELECT * FROM `$tableName` ORDER BY $column $order";
+        return $db->query($sql, [], false, static::class);
     }
 
     private function mapProperties(){
@@ -21,23 +27,71 @@ abstract class ActiveRecordEntity{
         $reflectionProperties = $reflector->getProperties();
 
         $properties = [];
+
         foreach($reflectionProperties as $reflectionProperty){
             $name = $reflectionProperty->getName();
             $properties[] = $name;
         }
-
+    
         return $properties;
     }
 
+
+    public static function getLast(){
+        $tableName = static::getTableName();
+        $sql = "SELECT * FROM `$tableName`
+         ORDER BY `id` DESC
+         LIMIT 1";
+
+        $db = Db::getInstance();
+        $lastRowArray = $db->query($sql, [], false, static::class);
+        return $lastRowArray[0];
+    }
+
     private function insert(){
+        $properties = $this->mapProperties();
+
+        $argumentsValues = [];
+        $params = [];
+        $argumentsNames = [];
+
+        $i = 0;
+
+        foreach($properties as $property){
+            if($this->$property){
+                ++$i;
+                $params[] = ":param" . $i;
+                $argumentsValues["param" . $i] = $this->$property;
+                $argumentsNames[] = $property;
+
+            }
+        }
+
+        $tableName = $this->getTableName();
+
+        $sql = "INSERT INTO `$tableName`" . "(" .  implode(",", $argumentsNames) . ")
+        VALUES(" . implode(",", $params) . ")";
+
+        $db = Db::getInstance();
+        $db->query($sql, $argumentsValues, true);
+
+        //$result = static::getLast();
+        //var_dump($result);
         
     }
 
+    private function update(){
+
+    }
+
     public function save(){
-       var_dump($this->mapProperties());
-
-
-
+        if($this->id){
+            echo "update!";
+            $this->update();            
+        }else{
+            $this->insert();
+        }
+       
     }
 }
 

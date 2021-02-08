@@ -5,10 +5,11 @@ namespace src\Models;
 
 use src\Models\ActiveRecordEntity;
 class EmailModel extends ActiveRecordEntity{
-    private $email;
-    private $id;
-    private $emailProvider;
-    private $createdAt;
+    protected $email;
+    protected $id;
+    protected $emailProvider;
+    protected $createdAt;
+
 
     public function getEmail(){
         return $this->email;
@@ -28,12 +29,23 @@ class EmailModel extends ActiveRecordEntity{
     }
 
 
+    
+
     public function getCreatedAt(){
         return $this->createdAt;
     }
 
+    public function setCreatedAt($createdAt){
+        $this->createdAt = $createdAt;
+    }
+  
+
     public function getId(){
         return $this->id;
+    }
+
+    public function setId($id){
+        $this->id = $id;
     }
 
 
