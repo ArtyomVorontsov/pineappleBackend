@@ -2,6 +2,8 @@
 
 namespace src\Controllers;
 
+use src\Exceptions\NotFoundException;
+use src\Exceptions\WrongUserInputException;
 use src\Models\EmailModel;
 use src\Models\EmailProviderModel;
 
@@ -29,8 +31,7 @@ class EmailController
       }
 
       if(!$isProviderExists){
-         var_dump("Email provider didn't exists");
-         return;
+         throw new NotFoundException("Email provider didn't exists");
       }
 
       var_dump(EmailModel::getAllBy($emailInstance, $column, $order,  $filterColumn , $emailProvider));
@@ -43,14 +44,14 @@ class EmailController
       var_dump($result);
    }
 
+
+
    public function addEmail()
    {
-
       $emailFromURl = $_GET["email"] ?? null;
 
       if (!$emailFromURl) {
-         echo "Email should be passed";
-         return;
+         throw new WrongUserInputException("Email should be passed");
       }
 
       $emailParts = explode("@", $emailFromURl);
