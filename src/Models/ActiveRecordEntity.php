@@ -9,17 +9,38 @@ use src\Db;
 abstract class ActiveRecordEntity{
     static abstract protected function getTableName(): string;
 
-    public static function getAllBy( object $object ,string $column = "email", string $order = "DESC"){
+    public static function getAll(){
+        $db = Db::getInstance();
+        $tableName = static::getTableName();
+
+        $sql = "SELECT * FROM $tableName";
+        $dataArrayFromDb = $db->query($sql, []);
+
+        return $dataArrayFromDb;
+    }
+
+    public static function getAllBy( object $object ,string $column = "email", string $order = "DESC", $filterColumn, $sougthValue ){
         $db = Db::getInstance();
         $tableName = static::getTableName();
 
         $properties = $object->mapProperties();
 
         $column = in_array($column, $properties, true) ? $column : "createdAt";
+        $filterColumn = in_array($filterColumn, $properties, true) ? $filterColumn : null;
         $order = $order === "DESC" ? "DESC" : "ASC";
 
-        $sql = "SELECT * FROM `$tableName` ORDER BY $column $order";
-        return $db->query($sql, [], false, static::class);
+
+        //with filter by column
+        if($filterColumn && $sougthValue){
+            $sql = "SELECT * FROM `$tableName` WHERE $filterColumn = :sougthValue ORDER BY $column $order";
+            return $db->query($sql, ["sougthValue" => $sougthValue], false, static::class);
+        }else{
+            //without filter by column
+            $sql = "SELECT * FROM `$tableName` ORDER BY $column $order";
+            return $db->query($sql, [], false, static::class);
+        }
+
+       
     }
 
     private function mapProperties(){
@@ -36,14 +57,14 @@ abstract class ActiveRecordEntity{
         return $properties;
     }
 
-    static public function getOneBy(string $column, $sougth){
+    static public function getOneByEmailProvider( string $sougth){
         $tableName = static::getTableName();
         $sql = "SELECT * FROM `$tableName`
-        WHERE :param1 = :param2
-        LIMIT 1";
+        WHERE emailProvider=:sougth";
 
         $db = Db::getInstance();
-        $value = $db->query($sql, ["param1" => $column, "param2" => $sougth], false, static::class);
+        $value = $db->query($sql, ["sougth" => $sougth], false, static::class);
+
         return $value[0];
     }
 

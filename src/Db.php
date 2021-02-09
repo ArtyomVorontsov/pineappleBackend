@@ -40,7 +40,7 @@ class Db {
             $sth = $this->_pdo->prepare($sql);
             $result = $sth->execute($params);
 
-            var_dump($params);
+            //var_dump($params);
 
             if(!$result || $isAdding) return [null];
 

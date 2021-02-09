@@ -9,14 +9,35 @@ class EmailController
 {
    public function getEmails()
    {
-
-      $column = $_GET["column"];
+      $column = $_GET["orderBy"];
       $order = $_GET["order"];
-
+      $emailProvider = $_GET["emailProvider"];
+      $filterColumn = "emailProvider";
 
       $emailInstance = new EmailModel();
-      var_dump(EmailModel::getAllBy($emailInstance, $column, $order));
 
+      //check for email provider in emailProviders table
+      $existingEmailProviders = EmailProviderModel::getAll();
+      $isProviderExists = false;
+
+      //if email provider exists we go further, else we return from method
+      foreach($existingEmailProviders as $existingEmailProvider){
+         if($existingEmailProvider->emailProvider === $emailProvider){
+            $isProviderExists = true;
+            break;
+         }
+      }
+
+      if(!$isProviderExists){
+         var_dump("Email provider didn't exists");
+         return;
+      }
+
+      var_dump(EmailModel::getAllBy($emailInstance, $column, $order,  $filterColumn , $emailProvider));
+   }
+
+   public function deleteEmail(){
+      
    }
 
    public function addEmail()
@@ -30,24 +51,23 @@ class EmailController
       }
 
       $emailParts = explode("@", $emailFromURl);
-      $emailProvider = $emailParts[1];
+      $emailProviderName = $emailParts[1];
 
       //check if this provider exists in db
-      $emailProviderFromDb = EmailProviderModel::getOneBy("email", $emailProvider);
-      var_dump($emailProviderFromDb);
+      $emailProviderFromDb = EmailProviderModel::getOneByEmailProvider($emailProviderName);
+      
 
       //and if not exists we add new provider to emailsProvider table
-      if($emailProviderFromDb === NULL ){
+      if($emailProviderFromDb == NULL){
          $newEmailProvider = new EmailProviderModel();
-         $newEmailProvider->setEmailProvider($emailProvider);
+         $newEmailProvider->setEmailProvider($emailProviderName);
          $newEmailProvider->save();
       };
 
-      
+
       $emailInstance = new EmailModel();
       $emailInstance->setEmail($emailFromURl);
-      $emailInstance->setEmailProvider($emailProvider);
-
+      $emailInstance->setEmailProvider($emailProviderName);
       $emailInstance->save();
 
       //we get new email after saving it in db
