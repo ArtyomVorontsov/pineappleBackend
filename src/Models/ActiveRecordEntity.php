@@ -9,6 +9,16 @@ use src\Db;
 abstract class ActiveRecordEntity{
     static abstract protected function getTableName(): string;
 
+    public static function deleteById(string $id): string{
+        $db = Db::getInstance();
+        $tableName = static::getTableName();
+
+        $sql = "DELETE FROM $tableName WHERE id = :id";
+        $db->query($sql, ["id" => $id], true);
+
+        return "Entity with id: $id was deleted";
+    }
+
     public static function getAll(){
         $db = Db::getInstance();
         $tableName = static::getTableName();
@@ -39,8 +49,6 @@ abstract class ActiveRecordEntity{
             $sql = "SELECT * FROM `$tableName` ORDER BY $column $order";
             return $db->query($sql, [], false, static::class);
         }
-
-       
     }
 
     private function mapProperties(){

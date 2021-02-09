@@ -40,8 +40,6 @@ class Db {
             $sth = $this->_pdo->prepare($sql);
             $result = $sth->execute($params);
 
-            //var_dump($params);
-
             if(!$result || $isAdding) return [null];
 
             return $sth->fetchAll(\PDO::FETCH_CLASS,$className);

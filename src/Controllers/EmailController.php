@@ -36,8 +36,11 @@ class EmailController
       var_dump(EmailModel::getAllBy($emailInstance, $column, $order,  $filterColumn , $emailProvider));
    }
 
-   public function deleteEmail(){
-      
+   public function deleteEmail($id){
+      var_dump($id);
+      $result = EmailModel::deleteById($id);
+
+      var_dump($result);
    }
 
    public function addEmail()

@@ -14,9 +14,13 @@ $routes = require __DIR__ .  "/src/Routes.php";
     });
 
     foreach($routes as $pattern => $controllerAndAction){
-        if(preg_match($pattern, $route)){
-            $isRouteFound = true;
-            break;
+        if(preg_match($pattern, $route, $matches)){
+
+            if(!empty($matches)){
+                $isRouteFound = true;
+                break;
+            }
+           
         };
     }
 
@@ -25,10 +29,12 @@ $routes = require __DIR__ .  "/src/Routes.php";
         return;
     }
 
+    unset($matches[0]);
+
     $controller = $controllerAndAction[0];
     $action = $controllerAndAction[1];
 
     $instance = new $controller();
-    $instance->$action()
+    $instance->$action(...$matches);
 
 ?>
