@@ -7,7 +7,7 @@ use src\Exceptions\WrongUserInputException;
 use src\Models\EmailModel;
 use src\Models\EmailProviderModel;
 
-class EmailController
+class EmailController extends ResponseController
 {
    public function getEmails()
    {
@@ -23,25 +23,36 @@ class EmailController
       $isProviderExists = false;
 
       //if email provider exists we go further, else we return from method
-      foreach($existingEmailProviders as $existingEmailProvider){
-         if($existingEmailProvider->emailProvider === $emailProvider){
+      foreach ($existingEmailProviders as $existingEmailProvider) {
+         if ($existingEmailProvider->emailProvider === $emailProvider) {
             $isProviderExists = true;
             break;
          }
       }
 
-      if(!$isProviderExists){
+      if (!$isProviderExists)
          throw new NotFoundException("Email provider didn't exists");
-      }
 
-      var_dump(EmailModel::getAllBy($emailInstance, $column, $order,  $filterColumn , $emailProvider));
+
+      $emailsArray = EmailModel::getAllBy($emailInstance, $column, $order,  $filterColumn, $emailProvider);
+
+      //parsing to JSON
+      $emailsJSON = "";
+      foreach ($emailsArray as $email)
+         $emailsJSON = $emailsJSON . "," . $email->getJSON();
+
+      //remove first character from emailsJSON because it is: ","
+      $emailsJSON = substr($emailsJSON, 1);
+
+      //sending data to client
+      static::sendJSON($emailsJSON);
    }
 
-   public function deleteEmail($id){
-      var_dump($id);
+   public function deleteEmail($id)
+   {
       $result = EmailModel::deleteById($id);
 
-      var_dump($result);
+      static::sendJSON(json_encode($result));
    }
 
 
@@ -59,10 +70,10 @@ class EmailController
 
       //check if this provider exists in db
       $emailProviderFromDb = EmailProviderModel::getOneByEmailProvider($emailProviderName);
-      
+
 
       //and if not exists we add new provider to emailsProvider table
-      if($emailProviderFromDb == NULL){
+      if ($emailProviderFromDb == NULL) {
          $newEmailProvider = new EmailProviderModel();
          $newEmailProvider->setEmailProvider($emailProviderName);
          $newEmailProvider->save();
@@ -84,6 +95,9 @@ class EmailController
       $emailInstance->setId($newEmail->getId());
       $emailInstance->setCreatedAt($newEmail->getCreatedAt());
 
-      var_dump($emailInstance);
+      //sending email data to client
+      static::sendJSON(($emailInstance->getJSON()));
+
+      
    }
 }
