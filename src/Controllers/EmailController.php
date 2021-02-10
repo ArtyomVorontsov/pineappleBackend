@@ -26,7 +26,7 @@ class EmailController extends ResponseController
 
          //if email provider exists we go further, else we return from method
          foreach ($existingEmailProviders as $existingEmailProvider) {
-            if ($existingEmailProvider->emailProvider === $emailProvider) {
+            if ($existingEmailProvider->getEmailProvider() === $emailProvider) {
                $isProviderExists = true;
                break;
             }
