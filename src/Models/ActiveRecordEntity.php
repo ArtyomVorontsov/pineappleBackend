@@ -8,6 +8,7 @@ use src\Db;
 
 abstract class ActiveRecordEntity{
     static abstract protected function getTableName(): string;
+    abstract public function getJSON();
 
     public static function deleteById(string $id): string{
         $db = Db::getInstance();
@@ -22,9 +23,9 @@ abstract class ActiveRecordEntity{
     public static function getAll(){
         $db = Db::getInstance();
         $tableName = static::getTableName();
-
+       
         $sql = "SELECT * FROM $tableName";
-        $dataArrayFromDb = $db->query($sql, []);
+        $dataArrayFromDb = $db->query($sql, [], false, static::class);
 
         return $dataArrayFromDb;
     }

@@ -29,5 +29,12 @@ class EmailProviderModel extends ActiveRecordEntity{
     static protected function getTableName(): string{
         return "emailProviders";
     }
+
+    public function getJSON(){
+        $obj["emailProvider"] = $this->emailProvider;
+        $obj["id"] = $this->id;
+
+        return json_encode($obj);
+    }
 }
 ?>

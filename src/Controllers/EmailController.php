@@ -47,7 +47,7 @@ class EmailController extends ResponseController
 
       //remove first character from emailsJSON because it is: ","
       $emailsJSON = substr($emailsJSON, 1);
-
+      $emailsJSON = "[" . $emailsJSON . "]";
       //sending data to client
       static::sendJSON($emailsJSON);
    }
@@ -57,6 +57,23 @@ class EmailController extends ResponseController
       $result = EmailModel::deleteById($id);
 
       static::sendJSON(json_encode($result));
+   }
+
+
+   public function getEmailProviders(){
+      $emailProvidersArray = EmailProviderModel::getAll();
+
+      //parsing to JSON
+      $emailProvidersJSON = "";
+      foreach ($emailProvidersArray as $emailProvider)
+         $emailProvidersJSON = $emailProvidersJSON . "," . $emailProvider->getJSON();
+      
+      //remove first character from emailsJSON because it is: ","
+      $emailProvidersJSON = substr($emailProvidersJSON, 1);
+      $emailProvidersJSON = "[" . $emailProvidersJSON . "]";
+      //sending data to client
+
+      static::sendJSON($emailProvidersJSON);
    }
 
 
