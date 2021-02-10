@@ -40,6 +40,8 @@ $routes = require __DIR__ .  "/src/Routes.php";
 
     }catch(CustomException $exception){
        $exception->getResult();
+    }catch(Exception $exception){
+        echo $exception->getMessage();
     }
 
 ?>

@@ -18,20 +18,24 @@ class EmailController extends ResponseController
 
       $emailInstance = new EmailModel();
 
-      //check for email provider in emailProviders table
-      $existingEmailProviders = EmailProviderModel::getAll();
-      $isProviderExists = false;
 
-      //if email provider exists we go further, else we return from method
-      foreach ($existingEmailProviders as $existingEmailProvider) {
-         if ($existingEmailProvider->emailProvider === $emailProvider) {
-            $isProviderExists = true;
-            break;
+      if ($emailProvider) {
+         //check for email provider in emailProviders table
+         $existingEmailProviders = EmailProviderModel::getAll();
+         $isProviderExists = false;
+
+         //if email provider exists we go further, else we return from method
+         foreach ($existingEmailProviders as $existingEmailProvider) {
+            if ($existingEmailProvider->emailProvider === $emailProvider) {
+               $isProviderExists = true;
+               break;
+            }
          }
+
+         if (!$isProviderExists)
+            throw new NotFoundException("Email provider didn't exists");
       }
 
-      if (!$isProviderExists)
-         throw new NotFoundException("Email provider didn't exists");
 
 
       $emailsArray = EmailModel::getAllBy($emailInstance, $column, $order,  $filterColumn, $emailProvider);
@@ -97,7 +101,5 @@ class EmailController extends ResponseController
 
       //sending email data to client
       static::sendJSON(($emailInstance->getJSON()));
-
-      
    }
 }

@@ -39,14 +39,18 @@ abstract class ActiveRecordEntity{
         $filterColumn = in_array($filterColumn, $properties, true) ? $filterColumn : null;
         $order = $order === "DESC" ? "DESC" : "ASC";
 
+        //limit entity count
+        $page = intval($_GET["page"]);
+        $limit = 10;
+        $offset = ($page*$limit) - ($limit);
 
         //with filter by column
         if($filterColumn && $sougthValue){
-            $sql = "SELECT * FROM `$tableName` WHERE $filterColumn = :sougthValue ORDER BY $column $order";
+            $sql = "SELECT * FROM `$tableName` WHERE $filterColumn = :sougthValue ORDER BY $column $order LIMIT $offset, $limit ";
             return $db->query($sql, ["sougthValue" => $sougthValue], false, static::class);
         }else{
             //without filter by column
-            $sql = "SELECT * FROM `$tableName` ORDER BY $column $order";
+            $sql = "SELECT * FROM `$tableName` ORDER BY $column $order LIMIT $offset, $limit ";
             return $db->query($sql, [], false, static::class);
         }
     }
