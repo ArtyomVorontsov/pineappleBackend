@@ -30,29 +30,6 @@ abstract class ActiveRecordEntity{
         return $dataArrayFromDb;
     }
 
-    public static function getAllWhere($idArray, $column){
-        $db = Db::getInstance();
-        $tableName = static::getTableName();
-        $sqlPart = "";
-      
-        for($i = 0; $i < count($idArray); $i++){
-            $id = $idArray[$i];
-
-            if(is_numeric($id) && $i === 0){
-                $sqlPart = $sqlPart . "$column = $id ";
-                continue;
-            }
-                
-            if(is_numeric($id))
-                $sqlPart = $sqlPart . "OR $column = $id ";   
-        }
-
-        $sql = "SELECT * FROM $tableName WHERE " . $sqlPart;
-        $dataArrayFromDb = $db->query($sql, [], false, static::class);
-    
-        return $dataArrayFromDb;
-    }
-
     public static function getAllBy( object $object ,string $column = "email", string $order = "DESC", $filterColumn, $sougthValue ){
         $db = Db::getInstance();
         $tableName = static::getTableName();
@@ -66,15 +43,18 @@ abstract class ActiveRecordEntity{
         //limit entity count
         $page = intval($_GET["page"]);
         $limit = 10;
-        $offset = ($page*$limit) - ($limit);
+        $offset = $page ? ($page*$limit) - ($limit) : null;
 
         //with filter by column
         if($filterColumn && $sougthValue){
             $sql = "SELECT * FROM `$tableName` WHERE $filterColumn = :sougthValue ORDER BY $column $order LIMIT $offset, $limit ";
             return $db->query($sql, ["sougthValue" => $sougthValue], false, static::class);
-        }else{
+        }elseif($offset){
             //without filter by column
             $sql = "SELECT * FROM `$tableName` ORDER BY $column $order LIMIT $offset, $limit ";
+            return $db->query($sql, [], false, static::class);
+        }else{
+            $sql = "SELECT * FROM `$tableName` ORDER BY $column $order";
             return $db->query($sql, [], false, static::class);
         }
     }
@@ -143,10 +123,17 @@ abstract class ActiveRecordEntity{
         
     }
 
-    
-    
+    private function update(){
+
+    }
 
     public function save(){
-        $this->insert();
+        if($this->id){
+            echo "update!";
+            $this->update();            
+        }else{
+            $this->insert();
+        }
+       
     }
 }

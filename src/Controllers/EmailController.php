@@ -24,7 +24,7 @@ class EmailController extends ResponseController
          $existingEmailProviders = EmailProviderModel::getAll();
          $isProviderExists = false;
 
-         //if email provider exists we go further, else we return from method
+         //if email provider exists we go further, else we throw error
          foreach ($existingEmailProviders as $existingEmailProvider) {
             if ($existingEmailProvider->getEmailProvider() === $emailProvider) {
                $isProviderExists = true;
@@ -71,20 +71,51 @@ class EmailController extends ResponseController
       //remove first character from emailsJSON because it is: ","
       $emailProvidersJSON = substr($emailProvidersJSON, 1);
       $emailProvidersJSON = "[" . $emailProvidersJSON . "]";
+      
       //sending data to client
-
       static::sendJSON($emailProvidersJSON);
    }
 
+   public function getEmailsCSV(){
+      $emailsIdFromURl = $_GET["emailsId"] ?? null;
 
+      if(!$emailsIdFromURl) 
+         throw new WrongUserInputException("Id array should be provided.");
+
+      $emailsIdArray = json_decode($emailsIdFromURl);
+      $emailsArray = EmailModel::getAllWhere($emailsIdArray, "id");
+
+
+      $emailsArrayCSV = [];
+      foreach($emailsArray as $email){
+         $emailsArrayCSV[] = array(
+         $email->getEmail(), 
+         $email->getEmailProvider(),
+         $email->getId(),
+         $email->getCreatedAt());
+      }
+      
+      //we open write stream for csv and send it to client
+      $fp = fopen('php://output', 'wb');
+      header('Content-Type: text/csv');
+      $ContentDispositionHeader = 'Content-Disposition: attachment; filename=' . '"emails' . $emailsIdFromURl . '.csv"';
+      header($ContentDispositionHeader);
+      foreach($emailsArrayCSV as $emailArray){
+         fputcsv($fp, $emailArray);
+      }
+
+      fclose($fp);
+   }
 
    public function addEmail()
    {
       $emailFromURl = $_GET["email"] ?? null;
 
-      if (!$emailFromURl) {
-         throw new WrongUserInputException("Email should be passed");
-      }
+      if (!$emailFromURl)
+         throw new WrongUserInputException("Email should be passed.");
+
+      if(!filter_var($emailFromURl, FILTER_VALIDATE_EMAIL))
+         throw new WrongUserInputException("Email invalid.");
 
       $emailParts = explode("@", $emailFromURl);
       $emailProviderName = $emailParts[1];
