@@ -41,5 +41,5 @@ https://www.youtube.com/watch?v=hVHFPzjp064&ab_channel=STS.
 
 Git clone all code from this repo to folder which serves your apache server. 
 Configure Service.php file with your db password, username , name, host and run server 
-with command **apachectl start**Now you can handle requests from client.
+with command **apachectl start**. Now you can handle requests from client.
 
