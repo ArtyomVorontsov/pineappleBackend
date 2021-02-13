@@ -11,8 +11,11 @@ This repo contains PHP backend part of the task.
 To run it locally first you need to have installed MySQL db and then create database in example "PineappleDB", 
 after that you should create 2 tables for emails and email providers.
 All commands to create db we can see below:
-```CREATE DATABASE PineappleDb;
+```
+CREATE DATABASE PineappleDb;
+
 USE PineappleDb;
+
 CREATE TABLE `emails` (
   `email` VARCHAR(255) NOT NULL,    
   `id` INT(255) NOT NULL auto_increment,    
