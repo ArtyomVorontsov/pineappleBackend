@@ -64,7 +64,9 @@ abstract class ActiveRecordEntity{
         $order = $order === "DESC" ? "DESC" : "ASC";
 
         //limit entity count
-        $page = intval($_GET["page"]);
+        $page = $_GET["page"] ?? 1;
+        $page = intval($page);
+
         $limit = 10;
         $offset = ($page*$limit) - ($limit);
 

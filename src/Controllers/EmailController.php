@@ -11,9 +11,9 @@ class EmailController extends ResponseController
 {
    public function getEmails()
    {
-      $column = $_GET["orderBy"];
-      $order = $_GET["order"];
-      $emailProvider = $_GET["emailProvider"];
+      $column = $_GET["orderBy"] ?? "id";
+      $order = $_GET["order"] ?? "DESC";
+      $emailProvider = $_GET["emailProvider"] ?? null;
       $filterColumn = "emailProvider";
 
       $emailInstance = new EmailModel();
