@@ -1,13 +1,13 @@
-# Pineapple Backend
+# Pineapple Backend
 
-## Description
+## Description
 This is web beveloper test task.
 In task we have 3 parts: 1. HTML5 and CSS32. Javascript3. PHP
 This repo contains PHP backend part of the task.
 
-## Installation
+## Installation
 
-#### Database:
+#### Database:
 To run it locally first you need to have installed MySQL db and then create database in example "PineappleDB", 
 after that you should create 2 tables for emails and email providers.
 All commands to create db we can see below:
@@ -26,7 +26,7 @@ CREATE TABLE `emailProviders` (
   PRIMARY KEY(`emailProvider`));
 ```
 
-#### Apache and PHP:
+#### Apache and PHP:
 
 Because my project uses .htaccess file to get url routes you should use webserver Apache and
 configure it in httpd.conf file.
