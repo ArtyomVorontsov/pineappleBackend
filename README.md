@@ -43,7 +43,7 @@ Server should allow overwrite self behavior by .htaccess files.
 
 You should install php thread safe version 7 or higher.
 My project use PDO to connect to MySQL, your php should have a PDO MySQL driver. 
-You should turn on it in **php.ini**
+You can turn on it in **php.ini**
 
 Clone all code from this repo to folder which serves your apache server. 
 Configure Service.php file with your db password, username , name, host and run server 
