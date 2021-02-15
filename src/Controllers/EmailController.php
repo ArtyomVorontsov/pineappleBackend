@@ -6,6 +6,7 @@ use src\Exceptions\NotFoundException;
 use src\Exceptions\WrongUserInputException;
 use src\Models\EmailModel;
 use src\Models\EmailProviderModel;
+use src\Utils\Utils;
 
 class EmailController extends ResponseController
 {
@@ -39,15 +40,9 @@ class EmailController extends ResponseController
 
 
       $emailsArray = EmailModel::getAllBy($emailInstance, $column, $order,  $filterColumn, $emailProvider);
+      //parse to JSON
+      $emailsJSON = Utils::parseArrayToJson($emailsArray);
 
-      //parsing to JSON
-      $emailsJSON = "";
-      foreach ($emailsArray as $email)
-         $emailsJSON = $emailsJSON . "," . $email->getJSON();
-
-      //remove first character from emailsJSON because it is: ","
-      $emailsJSON = substr($emailsJSON, 1);
-      $emailsJSON = "[" . $emailsJSON . "]";
       //sending data to client
       static::sendJSON($emailsJSON);
    }
@@ -55,22 +50,14 @@ class EmailController extends ResponseController
    public function deleteEmail($id)
    {
       $result = EmailModel::deleteById($id);
-
       static::sendJSON(json_encode($result));
    }
 
 
    public function getEmailProviders(){
       $emailProvidersArray = EmailProviderModel::getAll();
-
-      //parsing to JSON
-      $emailProvidersJSON = "";
-      foreach ($emailProvidersArray as $emailProvider)
-         $emailProvidersJSON = $emailProvidersJSON . "," . $emailProvider->getJSON();
-      
-      //remove first character from emailsJSON because it is: ","
-      $emailProvidersJSON = substr($emailProvidersJSON, 1);
-      $emailProvidersJSON = "[" . $emailProvidersJSON . "]";
+      //parse to JSON
+      $emailProvidersJSON = Utils::parseArrayToJson($emailProvidersArray);
       
       //sending data to client
       static::sendJSON($emailProvidersJSON);
@@ -124,7 +111,7 @@ class EmailController extends ResponseController
       $emailProviderFromDb = EmailProviderModel::getOneByEmailProvider($emailProviderName);
 
 
-      //and if not exists we add new provider to emailsProvider table
+      //if not exists we add new provider to emailsProvider table
       if ($emailProviderFromDb == NULL) {
          $newEmailProvider = new EmailProviderModel();
          $newEmailProvider->setEmailProvider($emailProviderName);

@@ -150,5 +150,7 @@ abstract class ActiveRecordEntity{
 
     public function save(){
         $this->insert();
+
+        //here we can expand functionality to update entity if we will need it in future.
     }
 }
